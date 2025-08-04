@@ -939,6 +939,10 @@ void ECBackend::handle_sub_write(
   const ZTracer::Trace &trace,
   ECListener&)
 {
+  printf(" handle_sub_write (%d.%d %d:%d %s) %zu\n", (int) get_info().pgid.pgid.m_pool,
+         (int) get_info().pgid.pgid.m_seed, (int)from.osd, (int)from.shard.id,
+         op.soid.oid.name.c_str(), ceph_clock_now().to_nsec());
+
   if (msg) {
     msg->mark_event("sub_op_started");
   }
@@ -1017,6 +1021,19 @@ void ECBackend::handle_sub_read(
   ECSubReadReply *reply,
   const ZTracer::Trace &trace)
 {
+  if (op.to_read.size() > 0)
+  {
+  printf(" handle_sub_read (%d.%d %d:%d %s) %zu\n", (int) get_info().pgid.pgid.m_pool,
+         (int) get_info().pgid.pgid.m_seed, (int)from.osd, (int)from.shard.id,
+         op.to_read.begin()->first.oid.name.c_str(), ceph_clock_now().to_nsec());
+  }
+  else
+  {
+  printf(" handle_sub_read (%d.%d %d:%d <n.a.>) %zu\n", (int) get_info().pgid.pgid.m_pool,
+         (int) get_info().pgid.pgid.m_seed, (int)from.osd, (int)from.shard.id,
+         ceph_clock_now().to_nsec());
+  }
+
   trace.event("handle sub read");
   shard_id_t shard = get_parent()->whoami_shard().shard;
   for(auto i = op.to_read.begin();

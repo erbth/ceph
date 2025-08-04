@@ -28,6 +28,8 @@ struct OpRequest : public TrackedOp {
 private:
   OpInfo op_info;
 
+  uint64_t t_start = 0;
+
 public:
   int maybe_init_op_info(const OSDMap &osdmap);
 
@@ -162,12 +164,17 @@ public:
     mark_flag_point(flag_delayed, s);
   }
   void mark_started() {
+    t_start = ceph_clock_now().to_nsec();
+    printf("OpRequest::mark_started %zu\n", t_start);
     mark_flag_point(flag_started, "started");
   }
   void mark_sub_op_sent(const std::string& s) {
     mark_flag_point_string(flag_sub_op_sent, s);
   }
   void mark_commit_sent() {
+    auto t = ceph_clock_now().to_nsec();
+    printf("OpRequest::mark_commit_sent %zu (%.3f ms)\n",
+           t, (t - t_start) * 1e-6);
     mark_flag_point(flag_commit_sent, "commit_sent");
   }
 

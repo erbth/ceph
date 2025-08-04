@@ -52,6 +52,23 @@ using ceph::bufferptr;
 using ceph::ErasureCodeInterfaceRef;
 using ceph::Formatter;
 
+
+struct ECDummyOp : ECCommon::RMWPipeline::Op {
+  void generate_transactions(
+      ceph::ErasureCodeInterfaceRef &ecimpl,
+      pg_t pgid,
+      const ECUtil::stripe_info_t &sinfo,
+      std::map<hobject_t,extent_map> *written,
+      std::map<shard_id_t, ObjectStore::Transaction> *transactions,
+      DoutPrefixProvider *dpp,
+      const ceph_release_t require_osd_release) final
+  {
+    // NOP, as -- in constrast to ECClassicalOp -- there is no
+    // transaction involved
+  }
+};
+
+
 static ostream& _prefix(std::ostream *_dout, ECCommon::RMWPipeline *rmw_pipeline) {
   return rmw_pipeline->get_parent()->gen_dbg_prefix(*_dout);
 }
@@ -712,6 +729,7 @@ bool ECCommon::RMWPipeline::try_reads_to_commit()
   Op *op = &(waiting_reads.front());
   if (op->read_in_progress())
     return false;
+
   waiting_reads.pop_front();
   waiting_commit.push_back(*op);
 
@@ -742,6 +760,9 @@ bool ECCommon::RMWPipeline::try_reads_to_commit()
        ++i) {
     trans[i->shard];
   }
+
+  if (dynamic_cast<ECDummyOp *>(op) != nullptr)
+    return true;
 
   op->trace.event("start ec write");
 
@@ -862,21 +883,6 @@ bool ECCommon::RMWPipeline::try_reads_to_commit()
 
   return true;
 }
-
-struct ECDummyOp : ECCommon::RMWPipeline::Op {
-  void generate_transactions(
-      ceph::ErasureCodeInterfaceRef &ecimpl,
-      pg_t pgid,
-      const ECUtil::stripe_info_t &sinfo,
-      std::map<hobject_t,extent_map> *written,
-      std::map<shard_id_t, ObjectStore::Transaction> *transactions,
-      DoutPrefixProvider *dpp,
-      const ceph_release_t require_osd_release) final
-  {
-    // NOP, as -- in constrast to ECClassicalOp -- there is no
-    // transaction involved
-  }
-};
 
 bool ECCommon::RMWPipeline::try_finish_rmw()
 {

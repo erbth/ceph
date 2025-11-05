@@ -126,8 +126,10 @@ ECBackend::ECBackend(
   ObjectStore *store,
   CephContext *cct,
   ErasureCodeInterfaceRef ec_impl,
-  uint64_t stripe_width)
+  uint64_t stripe_width,
+  int whoami)
   : PGBackend(cct, pg, store, coll, ch),
+    whoami(whoami),
     read_pipeline(cct, ec_impl, this->sinfo, get_parent()->get_eclistener()),
     rmw_pipeline(cct, ec_impl, this->sinfo, get_parent()->get_eclistener(), *this),
     recovery_backend(cct, this->coll, ec_impl, this->sinfo, read_pipeline, unstable_hashinfo_registry, get_parent(), this),
@@ -939,6 +941,8 @@ void ECBackend::handle_sub_write(
   const ZTracer::Trace &trace,
   ECListener&)
 {
+  evt_handle_sub_write.record_event(std::nullopt, std::nullopt, op.soid.oid.name);
+
   printf(" handle_sub_write (%d.%d %d:%d %s) %zu\n", (int) get_info().pgid.pgid.m_pool,
          (int) get_info().pgid.pgid.m_seed, (int)from.osd, (int)from.shard.id,
          op.soid.oid.name.c_str(), ceph_clock_now().to_nsec());
@@ -1021,6 +1025,12 @@ void ECBackend::handle_sub_read(
   ECSubReadReply *reply,
   const ZTracer::Trace &trace)
 {
+  for (auto& [k,v] : op.to_read)
+  {
+    evt_handle_sub_read.record_event(
+      std::nullopt, std::nullopt, k.oid.name);
+  }
+
   if (op.to_read.size() > 0)
   {
   printf(" handle_sub_read (%d.%d %d:%d %s) %zu\n", (int) get_info().pgid.pgid.m_pool,

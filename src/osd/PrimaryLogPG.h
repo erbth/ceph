@@ -34,6 +34,9 @@
 #include "PGTransaction.h"
 #include "cls/cas/cls_cas_ops.h"
 
+#include <scts.h>
+#include <event_visualizer.h>
+
 class CopyFromCallback;
 class PromoteCallback;
 struct RefCountCallback;
@@ -63,6 +66,12 @@ class PrimaryLogPG : public PG,
   friend class OSD;
   friend class Watch;
   friend class PrimaryLogScrub;
+  
+private:
+  std::shared_ptr<SCTS> scts = std::make_shared<SCTS>();
+
+  event_visualizer::EventSequence evt_op_started{std::to_string(osd->whoami) + "_op_started", scts};
+  event_visualizer::EventSequence evt_commit_sent{std::to_string(osd->whoami) + "_commit_sent", scts};
 
 public:
   MEMPOOL_CLASS_HELPERS();

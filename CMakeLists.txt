@@ -31,6 +31,9 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
   FIND_PACKAGE(Threads)
 endif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(EVENT_VISUALIZER REQUIRED event_visualizer scts)
+
 if(WIN32)
   # The Windows headers (e.g. coming from mingw or the Windows SDK) check
   # the targeted Windows version. The availability of certain functions and

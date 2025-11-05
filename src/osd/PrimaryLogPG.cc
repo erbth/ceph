@@ -1744,7 +1744,7 @@ PrimaryLogPG::PrimaryLogPG(OSDService *o, OSDMapRef curmap,
   PG(o, curmap, _pool, p),
   pgbackend(
     PGBackend::build_pg_backend(
-      _pool.info, ec_profile, this, coll_t(p), ch, o->store, cct)),
+      _pool.info, ec_profile, this, coll_t(p), ch, o->store, cct, o->whoami)),
   object_contexts(o->cct, o->cct->_conf->osd_pg_object_context_cache_count),
   new_backfill(false),
   temp_seq(0),
@@ -2470,6 +2470,8 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     return;
   }
 
+  evt_op_started.record_event(std::nullopt, std::nullopt,
+			      obc->obs.oi.soid.oid.name);
   op->mark_started();
 
   execute_ctx(ctx);
@@ -4311,6 +4313,10 @@ void PrimaryLogPG::execute_ctx(OpContext *ctx)
 	dout(10) << " sending reply on " << *m << " " << reply << dendl;
 	osd->send_message_osd_client(reply, m->get_connection());
 	ctx->sent_reply = true;
+
+	evt_commit_sent.record_event(std::nullopt, std::nullopt,
+				     ctx->obs->oi.soid.oid.name);
+
 	ctx->op->mark_commit_sent();
       }
     });

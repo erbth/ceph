@@ -26,6 +26,9 @@
 #include "ECTransaction.h"
 #include "ExtentCache.h"
 
+#include <scts.h>
+#include <event_visualizer.h>
+
 //forward declaration
 struct ECSubWrite;
 struct ECSubWriteReply;
@@ -35,6 +38,16 @@ struct ECSubReadReply;
 struct RecoveryMessages;
 
 class ECBackend : public PGBackend, public ECCommon {
+protected:
+  std::shared_ptr<SCTS> scts = std::make_shared<SCTS>();
+
+  int whoami;
+
+  event_visualizer::EventSequence evt_handle_sub_read{
+    std::to_string(whoami) + "_handle_sub_read", scts};
+  event_visualizer::EventSequence evt_handle_sub_write{
+    std::to_string(whoami) + "_handle_sub_write", scts};
+
 public:
   RecoveryHandle *open_recovery_op() override;
 
@@ -419,7 +432,8 @@ public:
     ObjectStore *store,
     CephContext *cct,
     ceph::ErasureCodeInterfaceRef ec_impl,
-    uint64_t stripe_width);
+    uint64_t stripe_width,
+    int whoami);
 
   int objects_get_attrs(
     const hobject_t &hoid,

@@ -57,7 +57,8 @@
 #include "common/BackTrace.h"
 #include "common/EventTrace.h"
 
-#ifdef WITH_LTTNG
+//#ifdef WITH_LTTNG
+#if 0
 #define TRACEPOINT_DEFINE
 #define TRACEPOINT_PROBE_DYNAMIC_LINKAGE
 #include "tracing/pg.h"

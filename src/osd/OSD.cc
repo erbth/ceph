@@ -151,7 +151,8 @@
 #include "json_spirit/json_spirit_reader.h"
 #include "json_spirit/json_spirit_writer.h"
 
-#ifdef WITH_LTTNG
+//#ifdef WITH_LTTNG
+#if 0
 #define TRACEPOINT_DEFINE
 #define TRACEPOINT_PROBE_DYNAMIC_LINKAGE
 #include "tracing/osd.h"
@@ -7709,9 +7710,9 @@ void OSD::ms_fast_dispatch(Message *m)
 
   OpRequestRef op = op_tracker.create_request<OpRequest, Message*>(m);
   {
-#ifdef WITH_LTTNG
-    osd_reqid_t reqid = op->get_reqid();
-#endif
+//#ifdef WITH_LTTNG
+//    osd_reqid_t reqid = op->get_reqid();
+//#endif
     tracepoint(osd, ms_fast_dispatch, reqid.name._type,
         reqid.name._num, reqid.tid, reqid.inc);
   }
@@ -11378,12 +11379,12 @@ void OSD::ShardedOpWQ::_process(uint32_t thread_index, uint32_t shard_index, hea
   // osd_opwq_process marks the point at which an operation has been dequeued
   // and will begin to be handled by a worker thread.
   {
-#ifdef WITH_LTTNG
-    osd_reqid_t reqid;
-    if (std::optional<OpRequestRef> _op = qi.maybe_get_op()) {
-      reqid = (*_op)->get_reqid();
-    }
-#endif
+//#ifdef WITH_LTTNG
+//    osd_reqid_t reqid;
+//    if (std::optional<OpRequestRef> _op = qi.maybe_get_op()) {
+//      reqid = (*_op)->get_reqid();
+//    }
+//#endif
     tracepoint(osd, opwq_process_start, reqid.name._type,
         reqid.name._num, reqid.tid, reqid.inc);
   }
@@ -11400,12 +11401,12 @@ void OSD::ShardedOpWQ::_process(uint32_t thread_index, uint32_t shard_index, hea
   qi.run(osd, sdata, pg, tp_handle);
 
   {
-#ifdef WITH_LTTNG
-    osd_reqid_t reqid;
-    if (std::optional<OpRequestRef> _op = qi.maybe_get_op()) {
-      reqid = (*_op)->get_reqid();
-    }
-#endif
+//#ifdef WITH_LTTNG
+//    osd_reqid_t reqid;
+//    if (std::optional<OpRequestRef> _op = qi.maybe_get_op()) {
+//      reqid = (*_op)->get_reqid();
+//    }
+//#endif
     tracepoint(osd, opwq_process_finish, reqid.name._type,
         reqid.name._num, reqid.tid, reqid.inc);
   }

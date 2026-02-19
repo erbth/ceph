@@ -3,7 +3,8 @@
 #include "include/rados/librados.h"
 #include "IoCtxImpl.h"
 
-#ifdef WITH_LTTNG
+//#ifdef WITH_LTTNG
+#if 0
 #include "tracing/librados.h"
 #else
 #define tracepoint(...)

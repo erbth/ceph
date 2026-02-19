@@ -1864,23 +1864,23 @@ public:
       return "???";
     }
 
-#if defined(WITH_LTTNG)
-    const char *get_state_latency_name(int state) {
-      switch (state) {
-      case l_bluestore_state_prepare_lat: return "prepare";
-      case l_bluestore_state_aio_wait_lat: return "aio_wait";
-      case l_bluestore_state_io_done_lat: return "io_done";
-      case l_bluestore_state_kv_queued_lat: return "kv_queued";
-      case l_bluestore_state_kv_committing_lat: return "kv_committing";
-      case l_bluestore_state_kv_done_lat: return "kv_done";
-      case l_bluestore_state_deferred_queued_lat: return "deferred_queued";
-      case l_bluestore_state_deferred_cleanup_lat: return "deferred_cleanup";
-      case l_bluestore_state_finishing_lat: return "finishing";
-      case l_bluestore_state_done_lat: return "done";
-      }
-      return "???";
-    }
-#endif
+//#if defined(WITH_LTTNG)
+//    const char *get_state_latency_name(int state) {
+//      switch (state) {
+//      case l_bluestore_state_prepare_lat: return "prepare";
+//      case l_bluestore_state_aio_wait_lat: return "aio_wait";
+//      case l_bluestore_state_io_done_lat: return "io_done";
+//      case l_bluestore_state_kv_queued_lat: return "kv_queued";
+//      case l_bluestore_state_kv_committing_lat: return "kv_committing";
+//      case l_bluestore_state_kv_done_lat: return "kv_done";
+//      case l_bluestore_state_deferred_queued_lat: return "deferred_queued";
+//      case l_bluestore_state_deferred_cleanup_lat: return "deferred_cleanup";
+//      case l_bluestore_state_finishing_lat: return "finishing";
+//      case l_bluestore_state_done_lat: return "done";
+//      }
+//      return "???";
+//    }
+//#endif
 
     inline void set_state(state_t s) {
        state = s;
@@ -1926,9 +1926,9 @@ public:
     uint64_t last_nid = 0;     ///< if non-zero, highest new nid we allocated
     uint64_t last_blobid = 0;  ///< if non-zero, highest new blobid we allocated
 
-#if defined(WITH_LTTNG)
-    bool tracing = false;
-#endif
+//#if defined(WITH_LTTNG)
+//    bool tracing = false;
+//#endif
 
 #ifdef WITH_BLKIN
     ZTracer::Trace trace;
@@ -1997,52 +1997,53 @@ public:
   };
 
   class BlueStoreThrottle {
-#if defined(WITH_LTTNG)
-    const std::chrono::time_point<ceph::mono_clock> time_base = ceph::mono_clock::now();
+//#if defined(WITH_LTTNG)
+//    const std::chrono::time_point<ceph::mono_clock> time_base = ceph::mono_clock::now();
+//
+//    // Time of last chosen io (microseconds)
+//    std::atomic<uint64_t> previous_emitted_tp_time_mono_mcs = {0};
+//    std::atomic<uint64_t> ios_started_since_last_traced = {0};
+//    std::atomic<uint64_t> ios_completed_since_last_traced = {0};
+//
+//    std::atomic_uint pending_kv_ios = {0};
+//    std::atomic_uint pending_deferred_ios = {0};
+//
+//    // Min period between trace points (microseconds)
+//    std::atomic<uint64_t> trace_period_mcs = {0};
+//
+//    bool should_trace(
+//      uint64_t *started,
+//      uint64_t *completed) {
+//      uint64_t min_period_mcs = trace_period_mcs.load(
+//	std::memory_order_relaxed);
+//
+//      if (min_period_mcs == 0) {
+//	*started = 1;
+//	*completed = ios_completed_since_last_traced.exchange(0);
+//	return true;
+//      } else {
+//	ios_started_since_last_traced++;
+//	auto now_mcs = ceph::to_microseconds<uint64_t>(
+//	  ceph::mono_clock::now() - time_base);
+//	uint64_t previous_mcs = previous_emitted_tp_time_mono_mcs;
+//	uint64_t period_mcs = now_mcs - previous_mcs;
+//	if (period_mcs > min_period_mcs) {
+//	  if (previous_emitted_tp_time_mono_mcs.compare_exchange_strong(
+//		previous_mcs, now_mcs)) {
+//	    // This would be racy at a sufficiently extreme trace rate, but isn't
+//	    // worth the overhead of doing it more carefully.
+//	    *started = ios_started_since_last_traced.exchange(0);
+//	    *completed = ios_completed_since_last_traced.exchange(0);
+//	    return true;
+//	  }
+//	}
+//	return false;
+//      }
+//    }
+//#endif
 
-    // Time of last chosen io (microseconds)
-    std::atomic<uint64_t> previous_emitted_tp_time_mono_mcs = {0};
-    std::atomic<uint64_t> ios_started_since_last_traced = {0};
-    std::atomic<uint64_t> ios_completed_since_last_traced = {0};
-
-    std::atomic_uint pending_kv_ios = {0};
-    std::atomic_uint pending_deferred_ios = {0};
-
-    // Min period between trace points (microseconds)
-    std::atomic<uint64_t> trace_period_mcs = {0};
-
-    bool should_trace(
-      uint64_t *started,
-      uint64_t *completed) {
-      uint64_t min_period_mcs = trace_period_mcs.load(
-	std::memory_order_relaxed);
-
-      if (min_period_mcs == 0) {
-	*started = 1;
-	*completed = ios_completed_since_last_traced.exchange(0);
-	return true;
-      } else {
-	ios_started_since_last_traced++;
-	auto now_mcs = ceph::to_microseconds<uint64_t>(
-	  ceph::mono_clock::now() - time_base);
-	uint64_t previous_mcs = previous_emitted_tp_time_mono_mcs;
-	uint64_t period_mcs = now_mcs - previous_mcs;
-	if (period_mcs > min_period_mcs) {
-	  if (previous_emitted_tp_time_mono_mcs.compare_exchange_strong(
-		previous_mcs, now_mcs)) {
-	    // This would be racy at a sufficiently extreme trace rate, but isn't
-	    // worth the overhead of doing it more carefully.
-	    *started = ios_started_since_last_traced.exchange(0);
-	    *completed = ios_completed_since_last_traced.exchange(0);
-	    return true;
-	  }
-	}
-	return false;
-      }
-    }
-#endif
-
-#if defined(WITH_LTTNG)
+//#if defined(WITH_LTTNG)
+#if 0
     void emit_initial_tracepoint(
       KeyValueDB &db,
       TransContext &txc,
@@ -2079,7 +2080,8 @@ public:
       reset_throttle(cct->_conf);
     }
 
-#if defined(WITH_LTTNG)
+//#if defined(WITH_LTTNG)
+#if 0
     void complete_kv(TransContext &txc);
     void complete(TransContext &txc);
 #else
@@ -2112,10 +2114,10 @@ public:
       throttle_deferred_bytes.reset_max(
 	conf->bluestore_throttle_bytes +
 	conf->bluestore_throttle_deferred_bytes);
-#if defined(WITH_LTTNG)
-      double rate = conf.get_val<double>("bluestore_throttle_trace_rate");
-      trace_period_mcs = rate > 0 ? std::floor((1/rate) * 1000000.0) : 0;
-#endif
+//#if defined(WITH_LTTNG)
+//      double rate = conf.get_val<double>("bluestore_throttle_trace_rate");
+//      trace_period_mcs = rate > 0 ? std::floor((1/rate) * 1000000.0) : 0;
+//#endif
     }
   } throttle;
 

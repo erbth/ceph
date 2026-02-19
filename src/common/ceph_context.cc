@@ -24,9 +24,9 @@
 
 #include <boost/algorithm/string.hpp>
 
-#ifdef HAVE_BREAKPAD
-#include <breakpad/client/linux/handler/exception_handler.h>
-#endif
+//#ifdef HAVE_BREAKPAD
+//#include <breakpad/client/linux/handler/exception_handler.h>
+//#endif
 
 #include "include/ceph_fs.h" // for CEPH_CRYPTO_NONE
 #include "include/common_fwd.h"
@@ -55,22 +55,22 @@
 #include "common/PluginRegistry.h"
 #include "common/valgrind.h"
 #include "include/spinlock.h"
-#ifndef WITH_CRIMSON
+//#ifndef WITH_CRIMSON
 #include "mon/MonMap.h"
-#endif
+//#endif
 
-#ifdef WITH_CRIMSON
-#include "crimson/common/perf_counters_collection.h"
-#else
+//#ifdef WITH_CRIMSON
+//#include "crimson/common/perf_counters_collection.h"
+//#else
 #include "common/perf_counters_collection.h"
-#endif
+//#endif
 
 // for CINIT_FLAGS
 #include "common/common_init.h"
 
-#ifdef WITH_CPUTRACE
-#include "common/cputrace.h"
-#endif
+//#ifdef WITH_CPUTRACE
+//#include "common/cputrace.h"
+//#endif
 
 #include <iostream>
 #include <pthread.h>
@@ -81,7 +81,8 @@ using ceph::bufferlist;
 using ceph::HeartbeatMap;
 
 
-#ifdef WITH_CRIMSON
+//#ifdef WITH_CRIMSON
+#if 0
 namespace crimson::common {
 CephContext::CephContext()
   : _conf{crimson::common::local_conf()},
@@ -690,7 +691,8 @@ int CephContext::_do_command(
     else if (command == "log reopen") {
       _log->reopen_log_file();
     }
-#ifdef WITH_CPUTRACE
+//#ifdef WITH_CPUTRACE
+#if 0
     else if (command == "cputrace start") {
       cputrace_start(f);
     }
@@ -804,12 +806,12 @@ CephContext::CephContext(uint32_t module_type_,
   _admin_socket->register_command("log dump", _admin_hook, "dump recent log entries to log file");
   _admin_socket->register_command("log reopen", _admin_hook, "reopen log file");
 
-#ifdef WITH_CPUTRACE
-  _admin_socket->register_command("cputrace start", _admin_hook, "start cpu profiling");
-  _admin_socket->register_command("cputrace stop", _admin_hook, "stop cpu profiling");
-  _admin_socket->register_command("cputrace reset", _admin_hook, "reset cpu profiling");
-  _admin_socket->register_command("cputrace dump name=logger,type=CephString,req=false name=counter,type=CephString,req=false", _admin_hook, "dump cpu profiling results");
-#endif
+//#ifdef WITH_CPUTRACE
+//  _admin_socket->register_command("cputrace start", _admin_hook, "start cpu profiling");
+//  _admin_socket->register_command("cputrace stop", _admin_hook, "stop cpu profiling");
+//  _admin_socket->register_command("cputrace reset", _admin_hook, "reset cpu profiling");
+//  _admin_socket->register_command("cputrace dump name=logger,type=CephString,req=false name=counter,type=CephString,req=false", _admin_hook, "dump cpu profiling results");
+//#endif
   _crypto_none = CryptoHandler::create(CEPH_CRYPTO_NONE);
   _crypto_aes = CryptoHandler::create(CEPH_CRYPTO_AES);
   _crypto_random.reset(new CryptoRandom());

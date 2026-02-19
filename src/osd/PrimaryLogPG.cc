@@ -70,7 +70,8 @@
 #include "include/ceph_assert.h"  // json_spirit clobbers it
 #include "include/rados/rados_types.hpp"
 
-#ifdef WITH_LTTNG
+//#ifdef WITH_LTTNG
+#if 0
 #include "tracing/osd.h"
 #else
 #define tracepoint(...)
@@ -4272,9 +4273,9 @@ void PrimaryLogPG::execute_ctx(OpContext *ctx)
   dout(30) << __func__ << " user_at_version " << ctx->user_at_version << dendl;
 
   {
-#ifdef WITH_LTTNG
-    osd_reqid_t reqid = ctx->op->get_reqid();
-#endif
+//#ifdef WITH_LTTNG
+//    osd_reqid_t reqid = ctx->op->get_reqid();
+//#endif
     tracepoint(osd, prepare_tx_enter, reqid.name._type,
         reqid.name._num, reqid.tid, reqid.inc);
   }
@@ -4283,9 +4284,9 @@ void PrimaryLogPG::execute_ctx(OpContext *ctx)
   int result = prepare_transaction(ctx);
 
   {
-#ifdef WITH_LTTNG
-    osd_reqid_t reqid = ctx->op->get_reqid();
-#endif
+//#ifdef WITH_LTTNG
+//    osd_reqid_t reqid = ctx->op->get_reqid();
+//#endif
     tracepoint(osd, prepare_tx_exit, reqid.name._type,
         reqid.name._num, reqid.tid, reqid.inc);
   }

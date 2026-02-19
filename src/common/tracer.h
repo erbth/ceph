@@ -6,7 +6,8 @@
 #include "acconfig.h"
 #include "include/encoding.h"
 
-#ifdef HAVE_JAEGER
+// #ifdef HAVE_JAEGER
+#if 0
 #include "opentelemetry/trace/provider.h"
 
 using jspan = opentelemetry::trace::Span;

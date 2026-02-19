@@ -13,7 +13,8 @@
 #include "include/ceph_assert.h"
 #include "osd/osd_types.h"
 
-#ifdef WITH_LTTNG
+//#ifdef WITH_LTTNG
+#if 0
 #define TRACEPOINT_DEFINE
 #define TRACEPOINT_PROBE_DYNAMIC_LINKAGE
 #include "tracing/oprequest.h"
@@ -106,9 +107,9 @@ int OpRequest::maybe_init_op_info(const OSDMap &osdmap) {
 
   auto m = get_req<MOSDOp>();
 
-#ifdef WITH_LTTNG
-  auto old_rmw_flags = op_info.get_flags();
-#endif
+//#ifdef WITH_LTTNG
+//  auto old_rmw_flags = op_info.get_flags();
+//#endif
   auto ret = op_info.set_from_op(m, osdmap);
   tracepoint(oprequest, set_rmw_flags, reqid.name._type,
 	     reqid.name._num, reqid.tid, reqid.inc,
@@ -117,9 +118,9 @@ int OpRequest::maybe_init_op_info(const OSDMap &osdmap) {
 }
 
 void OpRequest::mark_flag_point(uint8_t flag, const char *s) {
-#ifdef WITH_LTTNG
-  uint8_t old_flags = hit_flag_points;
-#endif
+//#ifdef WITH_LTTNG
+//  uint8_t old_flags = hit_flag_points;
+//#endif
   mark_event(s);
   last_event_detail = s;
   hit_flag_points |= flag;
@@ -130,9 +131,9 @@ void OpRequest::mark_flag_point(uint8_t flag, const char *s) {
 }
 
 void OpRequest::mark_flag_point_string(uint8_t flag, const string& s) {
-#ifdef WITH_LTTNG
-  uint8_t old_flags = hit_flag_points;
-#endif
+//#ifdef WITH_LTTNG
+//  uint8_t old_flags = hit_flag_points;
+//#endif
   mark_event(s);
   hit_flag_points |= flag;
   latest_flag_point = flag;

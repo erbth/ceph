@@ -27,9 +27,9 @@ target_link_libraries(bluestore
     blk heap_profiler kv ${FMT_LIB})
 
 add_dependencies(bluestore compressor_plugins)
-if(WITH_LTTNG)
-  add_dependencies(bluestore bluestore-tp)
-endif()
+#if(WITH_LTTNG)
+#  add_dependencies(bluestore bluestore-tp)
+#endif()
 
 if(WITH_BLUEFS)
   add_library(bluefs SHARED

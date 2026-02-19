@@ -67,15 +67,15 @@ target_link_libraries(osd
   PRIVATE
     legacy-option-headers
     os heap_profiler cpu_profiler ${FMT_LIB} ${CMAKE_DL_LIBS})
-if(WITH_LTTNG)
-  add_dependencies(osd osd-tp pg-tp)
-endif()
-if(WITH_EVENTTRACE)
-  add_dependencies(osd eventtrace_tp)
-endif()
-if(WITH_OSD_INSTRUMENT_FUNCTIONS)
-  add_dependencies(osd cyg_profile_tp)
-endif()
+#if(WITH_LTTNG)
+#  add_dependencies(osd osd-tp pg-tp)
+#endif()
+#if(WITH_EVENTTRACE)
+#  add_dependencies(osd eventtrace_tp)
+#endif()
+#if(WITH_OSD_INSTRUMENT_FUNCTIONS)
+#  add_dependencies(osd cyg_profile_tp)
+#endif()
 
 # libcls_* are runtime dependencies
 add_dependencies(osd cls_journal cls_hello cls_lock cls_log cls_numops

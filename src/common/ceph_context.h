@@ -35,7 +35,8 @@
 #include "common/cmdparse.h"
 #include "common/code_environment.h"
 #include "msg/msg_types.h"
-#ifdef WITH_CRIMSON
+//#ifdef WITH_CRIMSON
+#if 0
 #include "crimson/common/config_proxy.h"
 #else
 #include "common/config_proxy.h"
@@ -45,7 +46,8 @@
 
 #include "crush/CrushLocation.h"
 
-#ifdef HAVE_BREAKPAD
+//#ifdef HAVE_BREAKPAD
+#if 0
 namespace google_breakpad {
   class ExceptionHandler;
 }
@@ -72,7 +74,8 @@ namespace ceph {
   }
 }
 
-#ifdef WITH_CRIMSON
+// #ifdef WITH_CRIMSON
+#if 0
 namespace crimson::common {
 class CephContext {
 public:
@@ -148,7 +151,8 @@ public:
 
   ConfigProxy _conf;
   ceph::logging::Log *_log;
-#ifdef HAVE_BREAKPAD
+//#ifdef HAVE_BREAKPAD
+#if 0
   std::unique_ptr<google_breakpad::ExceptionHandler> _ex_handler;
   static_assert(sizeof(std::unique_ptr<google_breakpad::ExceptionHandler>) == sizeof(std::unique_ptr<char>));
 #else

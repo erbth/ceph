@@ -20,7 +20,7 @@ add_executable(ceph_ec_consistency_checker
   ${PROJECT_SOURCE_DIR}/src/osd/ECUtilL.cc
   ${PROJECT_SOURCE_DIR}/src/osd/ECUtil.cc)
 target_link_libraries(ceph_ec_consistency_checker
-  librados global ec_consistency)
+	librados global ec_consistency)
 install(TARGETS
 ceph_ec_consistency_checker
   DESTINATION ${CMAKE_INSTALL_BINDIR})

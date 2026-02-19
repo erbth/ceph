@@ -20,12 +20,12 @@
 #include "common/Cond.h"
 #include "common/errno.h"
 #include "PosixStack.h"
-#ifdef HAVE_RDMA
-#include "rdma/RDMAStack.h"
-#endif
-#ifdef HAVE_DPDK
-#include "dpdk/DPDKStack.h"
-#endif
+//#ifdef HAVE_RDMA
+//#include "rdma/RDMAStack.h"
+//#endif
+//#ifdef HAVE_DPDK
+//#include "dpdk/DPDKStack.h"
+//#endif
 
 #include "common/dout.h"
 #include "include/ceph_assert.h"
@@ -67,14 +67,14 @@ std::shared_ptr<NetworkStack> NetworkStack::create(CephContext *c,
 
   if (t == "posix")
     stack.reset(new PosixNetworkStack(c));
-#ifdef HAVE_RDMA
-  else if (t == "rdma")
-    stack.reset(new RDMAStack(c));
-#endif
-#ifdef HAVE_DPDK
-  else if (t == "dpdk")
-    stack.reset(new DPDKStack(c));
-#endif
+//#ifdef HAVE_RDMA
+//  else if (t == "rdma")
+//    stack.reset(new RDMAStack(c));
+//#endif
+//#ifdef HAVE_DPDK
+//  else if (t == "dpdk")
+//    stack.reset(new DPDKStack(c));
+//#endif
 
   if (stack == nullptr) {
     lderr(c) << __func__ << " ms_async_transport_type " << t <<

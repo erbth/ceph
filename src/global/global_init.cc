@@ -17,11 +17,11 @@
 #include <memory>
 #include <sstream>
 #include "acconfig.h"
-#ifdef HAVE_BREAKPAD
-#include <breakpad/client/linux/handler/exception_handler.h>
-#include <breakpad/client/linux/handler/minidump_descriptor.h>
-#include <breakpad/google_breakpad/common/minidump_format.h>
-#endif
+//#ifdef HAVE_BREAKPAD
+//#include <breakpad/client/linux/handler/exception_handler.h>
+//#include <breakpad/client/linux/handler/minidump_descriptor.h>
+//#include <breakpad/google_breakpad/common/minidump_format.h>
+//#endif
 #include "common/async/context_pool.h"
 #include "common/ceph_argparse.h"
 #include "common/code_environment.h"
@@ -187,16 +187,16 @@ void global_pre_init(
   g_conf().complain_about_parse_error(g_ceph_context);
 }
 
-#ifdef HAVE_BREAKPAD
-static bool dumpCallback(
-    const google_breakpad::MinidumpDescriptor& descriptor, void* context,
-    bool succeeded) {
-  char buf[1024];
-  snprintf(buf, sizeof(buf), "minidump created in path %s", descriptor.path());
-  dout_emergency(buf);
-  return succeeded;
-}
-#endif
+//#ifdef HAVE_BREAKPAD
+//static bool dumpCallback(
+//    const google_breakpad::MinidumpDescriptor& descriptor, void* context,
+//    bool succeeded) {
+//  char buf[1024];
+//  snprintf(buf, sizeof(buf), "minidump created in path %s", descriptor.path());
+//  dout_emergency(buf);
+//  return succeeded;
+//}
+//#endif
 
 boost::intrusive_ptr<CephContext>
 global_init(const std::map<std::string,std::string> *defaults,
@@ -236,7 +236,8 @@ global_init(const std::map<std::string,std::string> *defaults,
     install_standard_sighandlers();
   }
 
-#ifdef HAVE_BREAKPAD
+//#ifdef HAVE_BREAKPAD
+#if 0
   if (g_conf()->breakpad) {
     google_breakpad::MinidumpDescriptor descriptor(g_conf()->crash_dir);
     g_ceph_context->_ex_handler.reset(

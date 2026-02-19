@@ -113,10 +113,10 @@ set(common_srcs
   mclock_common.cc
   tcp_info.cc)
 
-if(WITH_CPUTRACE)
-  list(APPEND common_srcs
-    cputrace.cc)
-endif()
+#if(WITH_CPUTRACE)
+  #list(APPEND common_srcs
+    #cputrace.cc)
+#endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/src/dmclock/support/src)
 
@@ -193,9 +193,9 @@ elseif(WIN32)
   list(APPEND common_srcs win32/wstring.cc)
 endif()
 
-if(WITH_EVENTTRACE)
-  list(APPEND common_srcs EventTrace.cc)
-endif()
+#if(WITH_EVENTTRACE)
+#  list(APPEND common_srcs EventTrace.cc)
+#endif()
 
 add_library(common-common-objs OBJECT
   ${common_srcs})
@@ -210,10 +210,10 @@ target_compile_definitions(common-common-objs PRIVATE
   "CEPH_INSTALL_DATADIR=\"${CEPH_INSTALL_DATADIR}\""
   $<TARGET_PROPERTY:${FMT_LIB},INTERFACE_COMPILE_DEFINITIONS>)
 target_link_libraries(common-common-objs PUBLIC legacy-option-headers)
-if(WITH_BREAKPAD)
-  target_link_libraries(common-common-objs PUBLIC
-    Breakpad::client)
-endif()
+#if(WITH_BREAKPAD)
+#  target_link_libraries(common-common-objs PUBLIC
+#    Breakpad::client)
+#endif()
 
 set(common_mountcephfs_srcs
   armor.c

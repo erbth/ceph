@@ -26,15 +26,15 @@ if(WITH_FUSE)
     PRIVATE fusestore)
 endif()
 
-if(WITH_LTTNG)
-  add_dependencies(os objectstore-tp)
-endif()
+#if(WITH_LTTNG)
+#  add_dependencies(os objectstore-tp)
+#endif()
 
-if(WITH_JAEGER)
-  add_dependencies(os jaeger_base)
-  target_link_libraries(os
-    PRIVATE jaeger_base)
-endif()
+#if(WITH_JAEGER)
+#  add_dependencies(os jaeger_base)
+#  target_link_libraries(os
+#    PRIVATE jaeger_base)
+#endif()
 
 if(WITH_BLUESTORE)
   add_executable(ceph-bluestore-tool

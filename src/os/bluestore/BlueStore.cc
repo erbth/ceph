@@ -63,7 +63,8 @@
 #include "Compression.h"
 #include "BlueAdmin.h"
 
-#if defined(WITH_LTTNG)
+//#if defined(WITH_LTTNG)
+#if 0
 #define TRACEPOINT_DEFINE
 #define TRACEPOINT_PROBE_DYNAMIC_LINKAGE
 #include "tracing/bluestore.h"
@@ -14600,9 +14601,9 @@ void BlueStore::_txc_apply_kv(TransContext *txc, bool sync_submit_transaction)
 {
   ceph_assert(txc->get_state() == TransContext::STATE_KV_QUEUED);
   {
-#if defined(WITH_LTTNG)
-    auto start = mono_clock::now();
-#endif
+//#if defined(WITH_LTTNG)
+//    auto start = mono_clock::now();
+//#endif
 
 #ifdef WITH_BLKIN
     if (txc->trace) {
@@ -14618,17 +14619,17 @@ void BlueStore::_txc_apply_kv(TransContext *txc, bool sync_submit_transaction)
       txc->osr->qcond.notify_all();
     }
 
-#if defined(WITH_LTTNG)
-    if (txc->tracing) {
-      tracepoint(
-	bluestore,
-	transaction_kv_submit_latency,
-	txc->osr->get_sequencer_id(),
-	(uint64_t)txc,
-	sync_submit_transaction,
-	ceph::to_seconds<double>(mono_clock::now() - start));
-    }
-#endif
+//#if defined(WITH_LTTNG)
+//    if (txc->tracing) {
+//      tracepoint(
+//	bluestore,
+//	transaction_kv_submit_latency,
+//	txc->osr->get_sequencer_id(),
+//	(uint64_t)txc,
+//	sync_submit_transaction,
+//	ceph::to_seconds<double>(mono_clock::now() - start));
+//    }
+//#endif
   }
 
   for (auto ls : { &txc->onodes, &txc->modified_objects }) {
@@ -15149,9 +15150,9 @@ void BlueStore::_kv_sync_thread()
 	}
       }
 
-#if defined(WITH_LTTNG)
-      auto sync_start = mono_clock::now();
-#endif
+//#if defined(WITH_LTTNG)
+//      auto sync_start = mono_clock::now();
+//#endif
       // submit synct synchronously (block and wait for it to commit)
       int r = db_was_opened_read_only || cct->_conf->bluestore_debug_omit_kv_commit ?
 	0 : db->submit_transaction_sync(synct);
@@ -15169,22 +15170,22 @@ void BlueStore::_kv_sync_thread()
       int committing_size = kv_committing.size();
       int deferred_size = deferred_stable.size();
 
-#if defined(WITH_LTTNG)
-      double sync_latency = ceph::to_seconds<double>(mono_clock::now() - sync_start);
-      for (auto txc: kv_committing) {
-	if (txc->tracing) {
-	  tracepoint(
-	    bluestore,
-	    transaction_kv_sync_latency,
-	    txc->osr->get_sequencer_id(),
-	    (uint64_t)txc,
-	    kv_committing.size(),
-	    deferred_done.size(),
-	    deferred_stable.size(),
-	    sync_latency);
-	}
-      }
-#endif
+//#if defined(WITH_LTTNG)
+//      double sync_latency = ceph::to_seconds<double>(mono_clock::now() - sync_start);
+//      for (auto txc: kv_committing) {
+//	if (txc->tracing) {
+//	  tracepoint(
+//	    bluestore,
+//	    transaction_kv_sync_latency,
+//	    txc->osr->get_sequencer_id(),
+//	    (uint64_t)txc,
+//	    kv_committing.size(),
+//	    deferred_done.size(),
+//	    deferred_stable.size(),
+//	    sync_latency);
+//	}
+//      }
+//#endif
 
       {
 	std::unique_lock m{kv_finalize_lock};
@@ -18876,7 +18877,8 @@ void BlueStore::log_latency_fn(
   }
 }
 
-#if defined(WITH_LTTNG)
+//#if defined(WITH_LTTNG)
+#if 0
 void BlueStore::BlueStoreThrottle::emit_initial_tracepoint(
   KeyValueDB &db,
   TransContext &txc,
@@ -18961,20 +18963,20 @@ mono_clock::duration BlueStore::BlueStoreThrottle::log_state_latency(
   mono_clock::time_point now = mono_clock::now();
   mono_clock::duration lat = now - txc.last_stamp;
   logger->tinc_with_max(state, lat);
-#if defined(WITH_LTTNG)
-  if (txc.tracing &&
-      state >= l_bluestore_state_prepare_lat &&
-      state <= l_bluestore_state_done_lat) {
-    OID_ELAPSED("", lat.to_nsec() / 1000.0, txc.get_state_latency_name(state));
-    tracepoint(
-      bluestore,
-      transaction_state_duration,
-      txc.osr->get_sequencer_id(),
-      (uint64_t)&txc,
-      state,
-      ceph::to_seconds<double>(lat));
-  }
-#endif
+//#if defined(WITH_LTTNG)
+//  if (txc.tracing &&
+//      state >= l_bluestore_state_prepare_lat &&
+//      state <= l_bluestore_state_done_lat) {
+//    OID_ELAPSED("", lat.to_nsec() / 1000.0, txc.get_state_latency_name(state));
+//    tracepoint(
+//      bluestore,
+//      transaction_state_duration,
+//      txc.osr->get_sequencer_id(),
+//      (uint64_t)&txc,
+//      state,
+//      ceph::to_seconds<double>(lat));
+//  }
+//#endif
   txc.last_stamp = now;
   return lat;
 }
@@ -19018,40 +19020,40 @@ void BlueStore::BlueStoreThrottle::finish_start_transaction(
   emit_initial_tracepoint(db, txc, start_throttle_acquire);
 }
 
-#if defined(WITH_LTTNG)
-void BlueStore::BlueStoreThrottle::complete_kv(TransContext &txc)
-{
-  pending_kv_ios -= 1;
-  ios_completed_since_last_traced++;
-  if (txc.tracing) {
-    tracepoint(
-      bluestore,
-      transaction_commit_latency,
-      txc.osr->get_sequencer_id(),
-      (uint64_t)&txc,
-      ceph::to_seconds<double>(mono_clock::now() - txc.start));
-  }
-}
-#endif
+//#if defined(WITH_LTTNG)
+//void BlueStore::BlueStoreThrottle::complete_kv(TransContext &txc)
+//{
+//  pending_kv_ios -= 1;
+//  ios_completed_since_last_traced++;
+//  if (txc.tracing) {
+//    tracepoint(
+//      bluestore,
+//      transaction_commit_latency,
+//      txc.osr->get_sequencer_id(),
+//      (uint64_t)&txc,
+//      ceph::to_seconds<double>(mono_clock::now() - txc.start));
+//  }
+//}
+//#endif
 
-#if defined(WITH_LTTNG)
-void BlueStore::BlueStoreThrottle::complete(TransContext &txc)
-{
-  if (txc.deferred_txn) {
-    pending_deferred_ios -= 1;
-  }
-  if (txc.tracing) {
-    mono_clock::time_point now = mono_clock::now();
-    mono_clock::duration lat = now - txc.start;
-    tracepoint(
-      bluestore,
-      transaction_total_duration,
-      txc.osr->get_sequencer_id(),
-      (uint64_t)&txc,
-      ceph::to_seconds<double>(lat));
-  }
-}
-#endif
+//#if defined(WITH_LTTNG)
+//void BlueStore::BlueStoreThrottle::complete(TransContext &txc)
+//{
+//  if (txc.deferred_txn) {
+//    pending_deferred_ios -= 1;
+//  }
+//  if (txc.tracing) {
+//    mono_clock::time_point now = mono_clock::now();
+//    mono_clock::duration lat = now - txc.start;
+//    tracepoint(
+//      bluestore,
+//      transaction_total_duration,
+//      txc.osr->get_sequencer_id(),
+//      (uint64_t)&txc,
+//      ceph::to_seconds<double>(lat));
+//  }
+//}
+//#endif
 
 const string prefix_onode = "o";
 const string prefix_onode_shard = "x";

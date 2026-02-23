@@ -3197,3 +3197,10 @@ int librados::IoCtx::application_metadata_list(const std::string& app_name,
 {
   return io_ctx_impl->application_metadata_list(app_name, values);
 }
+
+
+/* Experimental RTT measurements etc. */
+int librados::IoCtx::msgr_rtt()
+{
+  return io_ctx_impl->msgr_rtt();
+}

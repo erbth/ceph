@@ -267,6 +267,10 @@ int OpInfo::set_from_op(
       set_promote();
       break;
 
+    case CEPH_OSD_OP_MSGR_RTT:
+      set_promote();
+      break;
+
     default:
       break;
     }

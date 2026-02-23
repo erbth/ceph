@@ -370,7 +370,11 @@ extern const char *ceph_osd_state_name(int s);
 	f(PG_HITSET_GET, __CEPH_OSD_OP(RD, PG, 4),	"pg-hitset-get")    \
 	f(PGNLS,	__CEPH_OSD_OP(RD, PG, 5),	"pgnls")	    \
 	f(PGNLS_FILTER,	__CEPH_OSD_OP(RD, PG, 6),	"pgnls-filter")     \
-	f(SCRUBLS, __CEPH_OSD_OP(RD, PG, 7), "scrubls")
+	f(SCRUBLS, __CEPH_OSD_OP(RD, PG, 7), "scrubls") \
+	\
+	\
+	/** Experimental RTT measurements etc. **/ \
+	f(MSGR_RTT, __CEPH_OSD_OP1(SUB, 80), "msgr-rtt")
 
 enum {
 #define GENERATE_ENUM_ENTRY(op, opcode, str)	CEPH_OSD_OP_##op = (opcode),

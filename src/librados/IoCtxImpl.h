@@ -297,6 +297,10 @@ struct librados::IoCtxImpl {
   int application_metadata_list(const std::string& app_name,
                                 std::map<std::string, std::string> *values);
 
+
+  /* Experimental RTT measurements etc. */
+  int msgr_rtt();
+
 };
 
 #endif

@@ -2243,3 +2243,12 @@ int librados::IoCtxImpl::application_metadata_list(const std::string& app_name,
   return r;
 }
 
+
+/* Experimental RTT measurements etc. */
+int librados::IoCtxImpl::msgr_rtt()
+{
+  ::ObjectOperation op;
+  prepare_assert_ops(&op);
+  op.msgr_rtt();
+  return operate(object_t(), &op, nullptr);
+}

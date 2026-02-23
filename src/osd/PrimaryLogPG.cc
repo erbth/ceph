@@ -2011,6 +2011,7 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     m->clear_payload();
   }
 
+
   dout(20) << __func__ << ": op " << *m << dendl;
 
   const hobject_t head = m->get_hobj().get_head();
@@ -2041,12 +2042,14 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     }
   }
 
+
   if (m->has_flag(CEPH_OSD_FLAG_PARALLELEXEC)) {
     // not implemented.
     dout(20) << __func__ << ": PARALLELEXEC not implemented " << *m << dendl;
     osd->reply_op_error(op, -EINVAL);
     return;
   }
+
 
   {
     int r = op->maybe_init_op_info(*get_osdmap());
@@ -2056,6 +2059,7 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     }
   }
 
+
   // check for op with rwordered and rebalance or localize reads
   if (m->has_flag(CEPH_OSD_FLAGS_DIRECT_READ) && op->rwordered()) {
     dout(4) << __func__ << ": rebelance or localized reads with rwordered not allowed "
@@ -2063,6 +2067,7 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     osd->reply_op_error(op, -EINVAL);
     return;
   }
+
 
   if (m->get_flags() & CEPH_OSD_FLAG_EC_DIRECT_READ) {
     if (is_primary() || is_nonprimary()) {
@@ -2127,6 +2132,12 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     osd->reply_op_error(op, -ENAMETOOLONG);
     return;
   }
+  if (m->ops[0].op.op == CEPH_OSD_OP_MSGR_RTT)
+  {
+    osd->reply_op_error(op, 0);
+    return;
+  }
+
   if (m->get_hobj().oid.name.empty()) {
     dout(4) << "do_op empty oid name is not allowed" << dendl;
     osd->reply_op_error(op, -EINVAL);
@@ -2620,6 +2631,7 @@ PrimaryLogPG::cache_result_t PrimaryLogPG::maybe_handle_manifest_detail(
       return cache_result_t::NOOP;
     }
   }
+
 
   switch (obc->obs.oi.manifest.type) {
   case object_manifest_t::TYPE_REDIRECT:

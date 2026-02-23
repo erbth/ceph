@@ -1672,6 +1672,13 @@ struct ObjectOperation {
   void cache_unpin() {
     add_op(CEPH_OSD_OP_CACHE_UNPIN);
   }
+
+
+  /* Experimental RTT measurements etc. */
+  void msgr_rtt()
+  {
+    add_op(CEPH_OSD_OP_MSGR_RTT);
+  }
 };
 
 inline std::ostream& operator <<(std::ostream& m, const ObjectOperation& oo) {
@@ -3911,6 +3918,7 @@ public:
 
   void handle_pool_op_reply(MPoolOpReply *m);
   int pool_op_cancel(ceph_tid_t tid, int r);
+
 
   // --------------------------
   // pool stats

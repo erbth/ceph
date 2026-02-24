@@ -2140,6 +2140,7 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     << "dt_recv_fast_dispatch: " << custom_utils::format_time(op->get_req()->t_recv_fast_dispatch - op->get_req()->t_recv_start) << "\n"
     << "dt_dispatch_queue_fast_dispatch: " << custom_utils::format_time(op->get_req()->t_dispatch_queue_fast_dispatch - op->get_req()->t_recv_start) << "\n"
     << "dt_ms_dispatch_fast: " << custom_utils::format_time(op->get_req()->t_ms_dispatch_fast - op->get_req()->t_recv_start) << "\n"
+    << "dt_osd_enqueue_op: " << custom_utils::format_time(op->get_req()->t_osd_enqueue_op - op->get_req()->t_recv_start) << "\n"
     << "dt_osd_dequeue_op: " << custom_utils::format_time(op->get_req()->t_osd_dequeue_op - op->get_req()->t_recv_start) << "\n"
     << "dt_reply: " << custom_utils::format_time(op->get_req()->t_reply - op->get_req()->t_recv_start) << "\n"
     << dendl;

@@ -7662,6 +7662,8 @@ void OSD::dispatch_session_waiting(const ceph::ref_t<Session>& session, OSDMapRe
 
 void OSD::ms_fast_dispatch(Message *m)
 {
+  auto t_ms_dispatch_fast = custom_utils::get_time();
+
   FUNCTRACE(cct);
   if (service.is_stopping()) {
     m->put();
@@ -7718,6 +7720,8 @@ void OSD::ms_fast_dispatch(Message *m)
         reqid.name._num, reqid.tid, reqid.inc);
   }
 
+  op->get_nonconst_req()->t_ms_dispatch_fast = t_ms_dispatch_fast;
+
   if (m->otel_trace.IsValid()) {
     op->osd_parent_span = tracing::osd::tracer.add_span("op-request-created", m->otel_trace);
   } else {
@@ -7747,8 +7751,6 @@ void OSD::ms_fast_dispatch(Message *m)
       legacy = false;
     }
   }
-
-  op->get_nonconst_req()->t_ms_dispatch_fast = custom_utils::get_time();
 
   if (!legacy &&
       (m->get_connection()->has_features(CEPH_FEATUREMASK_RESEND_ON_SPLIT) ||
@@ -9879,6 +9881,8 @@ bool OSD::op_is_discardable(const MOSDOp *op)
 
 void OSD::enqueue_op(spg_t pg, OpRequestRef&& op, epoch_t epoch)
 {
+  op->get_nonconst_req()->t_osd_enqueue_op = custom_utils::get_time();
+
   const utime_t stamp = op->get_req()->get_recv_stamp();
   const utime_t latency = ceph_clock_now() - stamp;
   const unsigned priority = op->get_req()->get_priority();

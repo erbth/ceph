@@ -558,6 +558,7 @@ public:
   int64_t t_recv_fast_dispatch = 0;
   int64_t t_dispatch_queue_fast_dispatch = 0;
   int64_t t_ms_dispatch_fast = 0;
+  int64_t t_osd_enqueue_op = 0;
   int64_t t_osd_dequeue_op = 0;
   int64_t t_reply = 0;
 };

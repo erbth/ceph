@@ -21,6 +21,8 @@
 #define dout_subsys ceph_subsys_ms
 #include "common/debug.h"
 
+#include "include/custom_utils.h"
+
 using ceph::cref_t;
 using ceph::ref_t;
 
@@ -72,6 +74,7 @@ bool DispatchQueue::can_fast_dispatch(const cref_t<Message> &m) const
 void DispatchQueue::fast_dispatch(const ref_t<Message>& m)
 {
   uint64_t msize = pre_dispatch(m);
+  m->t_dispatch_queue_fast_dispatch = custom_utils::get_time();
   msgr->ms_fast_dispatch(m);
   post_dispatch(m, msize);
 }

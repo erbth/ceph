@@ -84,6 +84,8 @@
 
 #include "osd_tracer.h"
 
+#include "include/custom_utils.h"
+
 MEMPOOL_DEFINE_OBJECT_FACTORY(PrimaryLogPG, replicatedpg, osd);
 
 using std::less;
@@ -2132,6 +2134,16 @@ void PrimaryLogPG::do_op(OpRequestRef& op)
     osd->reply_op_error(op, -ENAMETOOLONG);
     return;
   }
+
+  op->get_nonconst_req()->t_reply = custom_utils::get_time();
+  dout(0) << "\n"
+    << "dt_recv_fast_dispatch: " << custom_utils::format_time(op->get_req()->t_recv_fast_dispatch - op->get_req()->t_recv_start) << "\n"
+    << "dt_dispatch_queue_fast_dispatch: " << custom_utils::format_time(op->get_req()->t_dispatch_queue_fast_dispatch - op->get_req()->t_recv_start) << "\n"
+    << "dt_ms_dispatch_fast: " << custom_utils::format_time(op->get_req()->t_ms_dispatch_fast - op->get_req()->t_recv_start) << "\n"
+    << "dt_osd_dequeue_op: " << custom_utils::format_time(op->get_req()->t_osd_dequeue_op - op->get_req()->t_recv_start) << "\n"
+    << "dt_reply: " << custom_utils::format_time(op->get_req()->t_reply - op->get_req()->t_recv_start) << "\n"
+    << dendl;
+
   if (m->ops[0].op.op == CEPH_OSD_OP_MSGR_RTT)
   {
     osd->reply_op_error(op, 0);

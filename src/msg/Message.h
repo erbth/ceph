@@ -550,6 +550,16 @@ public:
   virtual void dump(ceph::Formatter *f) const;
 
   void encode(uint64_t features, int crcflags, bool skip_header_crc = false);
+
+
+  /* Timestamps */
+public:
+  int64_t t_recv_start = 0;
+  int64_t t_recv_fast_dispatch = 0;
+  int64_t t_dispatch_queue_fast_dispatch = 0;
+  int64_t t_ms_dispatch_fast = 0;
+  int64_t t_osd_dequeue_op = 0;
+  int64_t t_reply = 0;
 };
 
 extern Message *decode_message(CephContext *cct,

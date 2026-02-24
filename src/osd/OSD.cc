@@ -163,6 +163,8 @@
 
 #include "osd_tracer.h"
 
+#include "include/custom_utils.h"
+
 
 #define dout_context cct
 #define dout_subsys ceph_subsys_osd
@@ -7745,6 +7747,9 @@ void OSD::ms_fast_dispatch(Message *m)
       legacy = false;
     }
   }
+
+  op->get_nonconst_req()->t_ms_dispatch_fast = custom_utils::get_time();
+
   if (!legacy &&
       (m->get_connection()->has_features(CEPH_FEATUREMASK_RESEND_ON_SPLIT) ||
        m->get_type() != CEPH_MSG_OSD_OP)) {
@@ -9934,6 +9939,8 @@ void OSD::dequeue_op(
   PGRef pg, OpRequestRef op,
   ThreadPool::TPHandle &handle)
 {
+  op->get_nonconst_req()->t_osd_dequeue_op = custom_utils::get_time();
+
   const Message *m = op->get_req();
 
   FUNCTRACE(cct);

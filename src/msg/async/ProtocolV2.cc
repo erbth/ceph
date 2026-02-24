@@ -14,6 +14,8 @@
 #include "auth/AuthServer.h"
 #include "auth/AuthSessionHandler.h" // for struct DecryptionError
 
+#include "include/custom_utils.h"
+
 #define dout_subsys ceph_subsys_ms
 #undef dout_prefix
 #define dout_prefix _conn_prefix(_dout)
@@ -1400,6 +1402,8 @@ CtPtr ProtocolV2::_handle_read_frame_epilogue_main() {
 }
 
 CtPtr ProtocolV2::handle_message() {
+  auto t_start = custom_utils::get_time();
+
   ldout(cct, 20) << __func__ << dendl;
   ceph_assert(state == THROTTLE_DONE);
 
@@ -1449,6 +1453,8 @@ CtPtr ProtocolV2::handle_message() {
   }
 
   INTERCEPT(17);
+
+  message->t_recv_start = t_start;
 
   message->set_byte_throttler(connection->policy.throttler_bytes);
   message->set_message_throttler(connection->policy.throttler_messages);
@@ -1549,6 +1555,9 @@ CtPtr ProtocolV2::handle_message() {
     connection->delay_state->queue(delay_period, message);
   } else if (messenger->ms_can_fast_dispatch(message)) {
     connection->lock.unlock();
+
+    message->t_recv_fast_dispatch = custom_utils::get_time();
+
     connection->dispatch_queue->fast_dispatch(message);
     connection->recv_start_time = ceph::mono_clock::now();
     connection->logger->tinc(l_msgr_running_fast_dispatch_time,
